@@ -1,5 +1,5 @@
 import { json, redirect } from "@remix-run/node";
-import { useActionData, useLoaderData } from "@remix-run/react";
+import { Link, useActionData, useCatch, useLoaderData } from "@remix-run/react";
 import NewNote, { links as newNoteLinks } from "~/components/NewNote";
 import NoteList, { links as noteListLinks } from "~/components/NoteList";
 import { getStoredNotes, storeNotes } from "~/data/notes";
@@ -16,6 +16,12 @@ export default function NotePage() {
 
 export async function loader() {
   const notes = await getStoredNotes();
+  if (!notes || notes.length === 0) {
+    throw json(
+      { message: "No notes found" },
+      { status: 404, statusText: "Not Found" }
+    );
+  }
   return notes; // return raw data
   // ===> Behind the scenes, Remix is doing this:
   // return new Response(JSON.stringify(notes), {
@@ -59,4 +65,38 @@ export async function action({
 
 export function links() {
   return [...newNoteLinks(), ...noteListLinks()];
+}
+
+export function meta() {
+  return {
+    title: "New Note",
+    description: "Add a new note",
+  };
+}
+
+export function CatchBoundary() {
+  const caughtResponse = useCatch();
+
+  const message = caughtResponse.data?.message || "Notes not found.";
+
+  return (
+    <>
+      <NewNote />
+      <main className="error">
+        <p>{message}</p>
+      </main>
+    </>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <main className="error">
+      <h1>Something went wrong</h1>
+      <p>{error.message}</p>
+      <p>
+        Back to <Link to="/">safety</Link>
+      </p>
+    </main>
+  );
 }
