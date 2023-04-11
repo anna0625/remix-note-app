@@ -1,0 +1,21 @@
+#content {
+  text-align: center;
+  color: #b69185;
+}
+
+#cta {
+  margin-top: 2rem;
+}
+
+#cta a {
+  text-decoration: none;
+  background-color: #b69185;
+  color: white;
+  padding: 0.5rem 2rem;
+  border-radius: 4px;
+  font-size: 1.5rem;
+}
+
+#cta a:hover {
+  background-color: #a17c70;
+}
